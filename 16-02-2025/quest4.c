@@ -36,24 +36,23 @@ void encrypt_ecb(uint8_t *input, uint8_t *output, int len) {
 // CBC Mode
 void encrypt_cbc(uint8_t *input, uint8_t *output, int len) {
     uint8_t temp[BLOCK_SIZE];
-    memcpy(temp, iv, BLOCK_SIZE);  // Initialize IV
+    memcpy(temp, iv, BLOCK_SIZE); 
 
     for (int i = 0; i < len; i += BLOCK_SIZE) {
-        for (int j = 0; j < BLOCK_SIZE; j++) input[i + j] ^= temp[j];  // XOR with previous block (or IV)
+        for (int j = 0; j < BLOCK_SIZE; j++) input[i + j] ^= temp[j]; 
         simple_encrypt_block(input + i, output + i, key);
-        memcpy(temp, output + i, BLOCK_SIZE);  // Update IV
+        memcpy(temp, output + i, BLOCK_SIZE);  
     }
 }
 
-// CFB Mode
 void encrypt_cfb(uint8_t *input, uint8_t *output, int len) {
     uint8_t temp[BLOCK_SIZE];
-    memcpy(temp, iv, BLOCK_SIZE);  // Initialize IV
+    memcpy(temp, iv, BLOCK_SIZE);  
 
     for (int i = 0; i < len; i += BLOCK_SIZE) {
-        simple_encrypt_block(temp, temp, key);  // Encrypt IV or previous ciphertext
-        for (int j = 0; j < BLOCK_SIZE; j++) output[i + j] = input[i + j] ^ temp[j];  // XOR with input
-        memcpy(temp, output + i, BLOCK_SIZE);  // Update IV with ciphertext
+        simple_encrypt_block(temp, temp, key);  
+        for (int j = 0; j < BLOCK_SIZE; j++) output[i + j] = input[i + j] ^ temp[j]; 
+        memcpy(temp, output + i, BLOCK_SIZE);  
     }
 }
 
@@ -61,17 +60,16 @@ int main() {
     uint8_t plaintext[MESSAGE_SIZE] = "This is a test message.";
     int len = strlen((char *)plaintext);
 
-    // Pad message to be a multiple of BLOCK_SIZE
     pad_data(plaintext, &len);
 
     uint8_t encrypted_ecb[MESSAGE_SIZE] = {0}, encrypted_cbc[MESSAGE_SIZE] = {0}, encrypted_cfb[MESSAGE_SIZE] = {0};
 
-    // Encrypt using ECB, CBC, and CFB
+
     encrypt_ecb(plaintext, encrypted_ecb, len);
     encrypt_cbc(plaintext, encrypted_cbc, len);
     encrypt_cfb(plaintext, encrypted_cfb, len);
 
-    // Print results
+
     printf("ECB Encrypted: ");
     for (int i = 0; i < len; i++) printf("%02X ", encrypted_ecb[i]);
     printf("\n");
